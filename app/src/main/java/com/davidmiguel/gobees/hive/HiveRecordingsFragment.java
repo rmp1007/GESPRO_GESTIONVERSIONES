@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import rebus.permissionutils.AskagainCallback;
+import rebus.permissionutils.AskAgainCallback;
 import rebus.permissionutils.PermissionEnum;
 import rebus.permissionutils.PermissionManager;
 import rebus.permissionutils.PermissionUtils;
@@ -101,13 +101,13 @@ public class HiveRecordingsFragment extends Fragment
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(listAdapter);
-        hivesView = (LinearLayout) root.findViewById(R.id.recordingsLL);
+        hivesView = root.findViewById(R.id.recordingsLL);
 
         // Set up  no recordings view
         noRecordingsView = root.findViewById(R.id.no_recordings);
 
         // Set up floating action button
-        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_new_recording);
+        fab = getActivity().findViewById(R.id.fab_new_recording);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,10 +221,10 @@ public class HiveRecordingsFragment extends Fragment
             return true;
         }
         // Ask for permission
-        PermissionManager.with(getActivity())
+        PermissionManager.Builder()
                 .permission(PermissionEnum.CAMERA)
-                .askagain(true)
-                .askagainCallback(new AskagainCallback() {
+                                .askAgain(true)
+                .askAgainCallback(new AskAgainCallback() {
                     @Override
                     public void showRequestPermission(final UserResponse response) {
                         new AlertDialog.Builder(getActivity())
@@ -261,14 +261,15 @@ public class HiveRecordingsFragment extends Fragment
                         }
                     }
                 })
-                .ask();
+                .ask(getActivity());
         return false;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        PermissionManager.handleResult(requestCode, permissions, grantResults);
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionManager.handleResult(this, requestCode, permissions, grantResults);
     }
 
     @Override
