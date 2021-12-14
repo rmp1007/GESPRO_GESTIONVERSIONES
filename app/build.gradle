@@ -20,7 +20,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'jacoco-android'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
-
+apply plugin: 'com.github.triplet.play'
 // App version
 ext.versionMajor = 1 // API Changes, adding big new feature, redesign the App
 ext.versionMinor = 2 // New features in a backwards-compatible manner
@@ -37,6 +37,17 @@ android {
     compileSdkVersion 26
     buildToolsVersion '26.0.1'
 
+        playAccountConfigs {
+        defaultAccountConfig {
+            serviceAccountEmail = keystoreProperties['serviceAccountEmail']
+            jsonFile = file(keystoreProperties['googlePlayKey'])
+        }
+    }
+
+    play {
+        track = 'beta'
+    }
+
     defaultConfig {
         applicationId "com.davidmiguel.gobees"
         minSdkVersion 19
@@ -50,6 +61,7 @@ android {
         buildConfigField 'String', 'COMMIT_HASH', "\"${getCommitHash()}\""
         buildConfigField 'String', 'BUILD_DATE', "\"${getBuildDate()}\""
         buildConfigField 'String', 'OPEN_WEATHER_MAP_API_KEY', keystoreProperties['OpenWeatherMapApiKey']
+        playAccountConfig = playAccountConfigs.defaultAccountConfig
     }
 
     signingConfigs {
@@ -257,7 +269,7 @@ sonarqube {
         property "sonar.projectVersion", "1.1"
         property "sonar.exclusions", "**/*.png,**/*.jpg"
         property "sonar.android.lint.report", "./build/outputs/lint-results-mockDebug.xml"
-        property "sonar.junit.reportsPath", "./build/test-results/mockDebug"
+        return System.getenv()["TRAVIS_BUILD_NUMBER"] as Integer ?: 1
         property "sonar.jacoco.reportPath", "./build/jacoco/testMockDebugUnitTest.exec"
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.jacoco.reportMissing.force.zero", true
